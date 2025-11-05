@@ -1,4 +1,6 @@
 let player;
+let walk;
+
 let laser1, laser2;
 let bg;
 let diamond;
@@ -8,6 +10,7 @@ let lasersGroup;
 
 let gameState = "start";
 let direction;
+let moving;
 
 function preload() {
     floorImage = loadImage("assets/floor.png");
@@ -17,10 +20,10 @@ function preload() {
     leftImg = loadImage("assets/left.png");
     rightImg = loadImage("assets/right.png");
 
-    walkFrontAnim = loadImage("assets/walk-front.gif");
-    walkBackAnim = loadImage("assets/walk-back.gif");
-    walkLeftAnim = loadImage("assets/walk-left.gif");
-    walkRightAnim = loadImage("assets/walk-right.gif");
+    walkFrontAnim = loadAnimation("assets/front1.png", "assets/front2.png", "assets/front3.png", "assets/front4.png");
+    walkBackAnim = loadAnimation("assets/back1.png", "assets/back2.png", "assets/back3.png", "assets/back4.png");
+    walkLeftAnim = loadAnimation("assets/left1.png", "assets/left2.png", "assets/left3.png", "assets/left4.png");
+    walkRightAnim = loadAnimation("assets/right1.png", "assets/right2.png", "assets/right3.png", "assets/right4.png");
 
     diamondImage = loadImage("assets/diamond.png");
 
@@ -40,6 +43,7 @@ function setup() {
     bg = createSprite(400, 400, 800, 800);
     bg.addImage("floor", floorImage);
     bg.scale = 12;
+    bg.tint = color(255, 255, 255, 100)
 
     player = createSprite(400,700,40,80);
     player.scale = 2.5;
@@ -48,10 +52,10 @@ function setup() {
     //player.addImage("left", leftImg);
     //player.addImage("right", rightImg);
 
-    //player.addImage("walkFront", walkFrontAnim);
-    //player.addImage("walkBack", walkBackAnim);
-    //player.addImage("walkLeft", walkLeftAnim);
-    //player.addImage("walkRight", walkRightAnim);
+    player.addAnimation("walkFront", walkFrontAnim);
+    player.addAnimation("walkBack", walkBackAnim);
+    player.addAnimation("walkLeft", walkLeftAnim);
+    player.addAnimation("walkRight", walkRightAnim);
 
     diamond = createSprite(400, 100, 50, 50);
     diamond.addImage("diamond", diamondImage);
@@ -65,11 +69,12 @@ function setup() {
     emitter2.scale = 1.2;
     emitter2.addImage("right", emOnRight);
 
+    player.changeImage("back");
 }
 
 function draw() {
 
-    
+
     background(0);
     /*if(gameState === "start") {
         
@@ -80,7 +85,23 @@ function draw() {
         text("Pressione a barra de espaço para iniciar!",200, 200 ); 
     }*/
 
-    
+    moving = false;
+
+    player.velocity.x = 0;
+    player.velocity.y = 0;
+    if(keyDown('w') || keyDown(UP_ARROW)){
+        player.velocity.y = -4;
+        player.changeAnimation("walkBack");
+        moving = true;
+        direction = "back";
+    }
+    if(!moving){
+        if(direction = "back"){
+            player.changeImage("back");
+        }
+    }
+
+        
 
     drawSprites();
 }
