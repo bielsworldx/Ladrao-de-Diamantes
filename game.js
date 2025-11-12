@@ -9,7 +9,7 @@ let emitter1, emitter2;
 let lasersGroup;
 
 let gameState = "start";
-let direction;
+let direction = "back";
 let moving;
 
 function preload() {
@@ -17,8 +17,8 @@ function preload() {
 
     frontImg = loadImage("assets/front.png");
     backImg = loadImage("assets/back.png");
-    leftImg = loadImage("assets/left.png");
-    rightImg = loadImage("assets/right.png");
+    leftImg = loadImage("assets/left2.png");
+    rightImg = loadImage("assets/right2.png");
 
     walkFrontAnim = loadAnimation("assets/front1.png", "assets/front2.png", "assets/front3.png", "assets/front4.png");
     walkBackAnim = loadAnimation("assets/back1.png", "assets/back2.png", "assets/back3.png", "assets/back4.png");
@@ -48,9 +48,9 @@ function setup() {
     player = createSprite(400,700,40,80);
     player.scale = 2.5;
     player.addImage("front", frontImg);
-    //player.addImage("back", backImg);
-    //player.addImage("left", leftImg);
-    //player.addImage("right", rightImg);
+    player.addImage("back", backImg);
+    player.addImage("left", leftImg);
+    player.addImage("right", rightImg);
 
     player.addAnimation("walkFront", walkFrontAnim);
     player.addAnimation("walkBack", walkBackAnim);
@@ -62,11 +62,11 @@ function setup() {
     diamond.scale = 1.4;
 
     emitter1 = createSprite(10, 600, 40, 40);
-    emitter1.scale = 1.2;
+    emitter1.scale = 2.2;
     emitter1.addImage("left", emOnLeft);
 
     emitter2 = createSprite(790, 200, 40, 40);
-    emitter2.scale = 1.2;
+    emitter2.scale = 2.2;
     emitter2.addImage("right", emOnRight);
 
     player.changeImage("back");
@@ -76,32 +76,64 @@ function draw() {
 
 
     background(0);
-    /*if(gameState === "start") {
+    moving = false;
+    player.velocity.x = 0;
+    player.velocity.y = 0;
+    if(gameState === "start") {
         
     
         textSize(20);
         stroke("red");
         fill("red");
         text("Pressione a barra de espaço para iniciar!",200, 200 ); 
-    }*/
-
-    moving = false;
-
-    player.velocity.x = 0;
-    player.velocity.y = 0;
-    if(keyDown('w') || keyDown(UP_ARROW)){
+        if(keyDown('SPACE')){
+            gameState === "play";
+        }
+    }
+    if(gameState === "play"){
+        if(keyDown('w') || keyDown(UP_ARROW)){
         player.velocity.y = -4;
         player.changeAnimation("walkBack");
         moving = true;
         direction = "back";
     }
+    if(keyDown('s') || keyDown(DOWN_ARROW)){
+        player.velocity.y = 4;
+        player.changeAnimation("walkFront");
+        moving = true;
+        direction = "front";
+    }
+    if(keyDown('a') || keyDown(LEFT_ARROW)){
+        player.velocity.x = -4;
+        player.changeAnimation("walkLeft");
+        moving = true;
+        direction = "left";
+    }
+    if(keyDown('d') || keyDown(RIGHT_ARROW)){
+        player.velocity.x = 4;
+        player.changeAnimation("walkRight");
+        moving = true;
+        direction = "right";
+    }
     if(!moving){
-        if(direction = "back"){
+        if(direction == "back"){
             player.changeImage("back");
         }
+        else if(direction == "front"){
+            player.changeImage("front");
+        }
+        else if(direction == "left") {
+            player.changeImage("left");
+        }
+        else {
+            player.changeImage("right");
+        }
+    }
     }
 
-        
+
+    player.position.x = constrain(player.position.x,35,765);
+    player.position.y = constrain(player.position.y,85,720);  
 
     drawSprites();
 }
