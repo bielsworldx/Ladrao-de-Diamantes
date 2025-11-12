@@ -2,6 +2,8 @@ let player;
 let walk;
 
 let laser1, laser2;
+let vel1 = 0;
+let vel2 = 0;
 let bg;
 let diamond;
 let emitter1, emitter2;
@@ -61,6 +63,14 @@ function setup() {
     diamond.addImage("diamond", diamondImage);
     diamond.scale = 1.4;
 
+    laser1 = createSprite(-70, 600, 60, 20);
+    laser1.scale = 3.2;
+    laser1.addImage("laser1", laser);
+
+    laser2 = createSprite(870, 200, 60, 20);
+    laser2.scale = 3.2;
+    laser2.addImage("laser1", laser);
+
     emitter1 = createSprite(10, 600, 40, 40);
     emitter1.scale = 2.2;
     emitter1.addImage("left", emOnLeft);
@@ -79,6 +89,10 @@ function draw() {
     moving = false;
     player.velocity.x = 0;
     player.velocity.y = 0;
+
+    laser1.velocity.x = 0;
+    laser2.velocity.x = 0;
+
     if(gameState === "start") {
         
     
@@ -86,9 +100,6 @@ function draw() {
         stroke("red");
         fill("red");
         text("Pressione a barra de espaço para iniciar!",200, 200 ); 
-        if(keyDown('SPACE')){
-            gameState === "play";
-        }
     }
     if(gameState === "play"){
         if(keyDown('w') || keyDown(UP_ARROW)){
@@ -96,39 +107,46 @@ function draw() {
         player.changeAnimation("walkBack");
         moving = true;
         direction = "back";
-    }
-    if(keyDown('s') || keyDown(DOWN_ARROW)){
-        player.velocity.y = 4;
-        player.changeAnimation("walkFront");
-        moving = true;
-        direction = "front";
-    }
-    if(keyDown('a') || keyDown(LEFT_ARROW)){
-        player.velocity.x = -4;
-        player.changeAnimation("walkLeft");
-        moving = true;
-        direction = "left";
-    }
-    if(keyDown('d') || keyDown(RIGHT_ARROW)){
-        player.velocity.x = 4;
-        player.changeAnimation("walkRight");
-        moving = true;
-        direction = "right";
-    }
-    if(!moving){
-        if(direction == "back"){
-            player.changeImage("back");
         }
-        else if(direction == "front"){
-            player.changeImage("front");
+        if(keyDown('s') || keyDown(DOWN_ARROW)){
+            player.velocity.y = 4;
+            player.changeAnimation("walkFront");
+            moving = true;
+            direction = "front";
         }
-        else if(direction == "left") {
-            player.changeImage("left");
+        if(keyDown('a') || keyDown(LEFT_ARROW)){
+            player.velocity.x = -4;
+            player.changeAnimation("walkLeft");
+            moving = true;
+            direction = "left";
         }
-        else {
-            player.changeImage("right");
+        if(keyDown('d') || keyDown(RIGHT_ARROW)){
+            player.velocity.x = 4;
+            player.changeAnimation("walkRight");
+            moving = true;
+            direction = "right";
         }
-    }
+        if(!moving){
+            if(direction == "back"){
+                player.changeImage("back");
+            }
+            else if(direction == "front"){
+                player.changeImage("front");
+            }
+            else if(direction == "left") {
+                player.changeImage("left");
+            }
+            else {
+                player.changeImage("right");
+            }
+        }
+
+        laser1.velocity.x = 12;
+        if (laser1.x > 870){
+            laser1.x = -140;
+           //vel1 += 1;
+            laser1.velocityX *= 25;
+        }
     }
 
 
@@ -136,4 +154,10 @@ function draw() {
     player.position.y = constrain(player.position.y,85,720);  
 
     drawSprites();
+}
+
+function keyPressed(){
+    if(key === " "){
+     gameState = "play"   
+    }
 }
