@@ -2,8 +2,8 @@ let player;
 let walk;
 
 let laser1, laser2;
-let vel1 = 0;
-let vel2 = 0;
+let vel1 = 8;
+let vel2 = 8;
 let bg;
 let diamond;
 let emitter1, emitter2;
@@ -63,11 +63,11 @@ function setup() {
     diamond.addImage("diamond", diamondImage);
     diamond.scale = 1.4;
 
-    laser1 = createSprite(-70, 600, 60, 20);
+    laser1 = createSprite(-50, 600, 60, 20);
     laser1.scale = 3.2;
     laser1.addImage("laser1", laser);
 
-    laser2 = createSprite(870, 200, 60, 20);
+    laser2 = createSprite(850, 200, 60, 20);
     laser2.scale = 3.2;
     laser2.addImage("laser1", laser);
 
@@ -94,8 +94,6 @@ function draw() {
     laser2.velocity.x = 0;
 
     if(gameState === "start") {
-        
-    
         textSize(20);
         stroke("red");
         fill("red");
@@ -141,14 +139,36 @@ function draw() {
             }
         }
 
-        laser1.velocity.x = 12;
-        if (laser1.x > 870){
-            laser1.x = -140;
-           //vel1 += 1;
-            laser1.velocityX *= 25;
+        laser1.velocity.x = vel1;
+        if (laser1.x > width + 50){
+            laser1.x = -50;
+            vel1 += 2;
+        }
+        laser2.velocity.x = -vel2;
+        if (laser2.x < -50){
+            laser2.x = 850;
+            vel2 += 2;
+        }
+
+        if(player.isTouching(laser1) || player.isTouching(laser2)){
+            gameState = "end";
         }
     }
 
+    if(gameState = "end"){
+        textSize(50);
+        textAlign(CENTER);
+        stroke("red");
+        fill("red");
+        text("Você falhou na missão!",width / 2 , height / 2 ); 
+
+        laser1.velocity.x = 0;
+        laser2.velocity.x = 0;
+    }
+
+    if(keyWentDown(" ") && gameState == "end"){
+        resetGame();
+    }
 
     player.position.x = constrain(player.position.x,35,765);
     player.position.y = constrain(player.position.y,85,720);  
@@ -158,6 +178,19 @@ function draw() {
 
 function keyPressed(){
     if(key === " "){
-     gameState = "play"   
+     gameState = "play";   
     }
+}
+
+function resetGame() {
+    gameState = "start";
+    
+    vel1 = 8;
+    vel2 = 8;
+
+    player.position.x = 400;
+    player.position.y = 700;
+
+    laser1.x = -50;
+    laser2.x = 850;
 }
