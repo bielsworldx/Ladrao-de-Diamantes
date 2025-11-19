@@ -8,6 +8,8 @@ let bg;
 let diamond;
 let emitter1, emitter2;
 
+var door;
+
 let lasersGroup;
 
 let gameState = "start";
@@ -26,6 +28,10 @@ function preload() {
     walkBackAnim = loadAnimation("assets/back1.png", "assets/back2.png", "assets/back3.png", "assets/back4.png");
     walkLeftAnim = loadAnimation("assets/left1.png", "assets/left2.png", "assets/left3.png", "assets/left4.png");
     walkRightAnim = loadAnimation("assets/right1.png", "assets/right2.png", "assets/right3.png", "assets/right4.png");
+
+    doorImg = loadImage("assets/door1.png");
+    doorOpenAnim = loadAnimation("assets/door1.png", "assets/door2.png", "assets/door3.png", "assets/door4.png", "assets/door5.png", "assets/door6.png", "assets/door7.png",);
+    doorOpen = loadAnimation("assets/door7.png");
 
     diamondImage = loadImage("assets/diamond.png");
 
@@ -70,6 +76,12 @@ function setup() {
     laser2 = createSprite(850, 200, 60, 20);
     laser2.scale = 3.2;
     laser2.addImage("laser1", laser);
+
+    door = createSprite(724, 724, 40, 40);
+    door.scale = 7.5;
+    door.addImage("door", doorImg);
+    door.addAnimation("opening", doorOpenAnim);
+    door.addAnimation("opened", doorOpen);
 
     emitter1 = createSprite(10, 600, 40, 40);
     emitter1.scale = 2.2;
@@ -153,9 +165,15 @@ function draw() {
         if(player.isTouching(laser1) || player.isTouching(laser2)){
             gameState = "end";
         }
+
+        if(player.isTouching(diamond)){
+            diamond.destroy();
+            door.changeAnimation("opening");
+            door.animation.looping = false;
+        }
     }
 
-    if(gameState = "end"){
+    if(gameState === "end"){
         textSize(50);
         textAlign(CENTER);
         stroke("red");
@@ -190,6 +208,11 @@ function resetGame() {
 
     player.position.x = 400;
     player.position.y = 700;
+
+    diamond.position.x = 400;
+    diamond.position.y = 100;
+
+    door.changeImage("door");
 
     laser1.x = -50;
     laser2.x = 850;
