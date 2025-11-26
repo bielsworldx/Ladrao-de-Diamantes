@@ -17,6 +17,9 @@ let direction = "back";
 let hasDiamond = false;
 let moving;
 
+let winMessageTime = 0;
+let justWon = false;
+
 function preload() {
     floorImage = loadImage("assets/floor.png");
 
@@ -112,7 +115,7 @@ function draw() {
     laser2.velocity.x = 0;
 
     if(gameState === "start") {
-        noTint();
+        //noTint();
         textSize(20);
         stroke("#a1151c");
         fill("red");
@@ -179,11 +182,9 @@ function draw() {
             door.changeAnimation("opening");
             door.animation.looping = false;
         }
-        if(player.isTouching(door) && hasDiamond == true){
 
-        }
-        else if(player.isTouching(door) && hasDiamond == false){
-            noTint();
+        if(player.isTouching(door) && hasDiamond == false){
+            //noTint();
             textSize(50);
             textAlign(CENTER);
             stroke("#a1151c");
@@ -195,8 +196,12 @@ function draw() {
             player.visible = false;
             laser1.velocity.x = 0;
             laser2.velocity.x = 0;
+            winMessageTime = millis();
+            justWon = true;
             gameState = "win";
         }
+
+    }
 
     if(gameState === "win") {
             //noTint();
@@ -204,8 +209,19 @@ function draw() {
             textAlign(CENTER);
             stroke("#aa7a13ff");
             fill("#e8a921ff");
-            text("Missão completa com sucesso!\nPressione SPACE para refazer.",width / 2 , height / 2 ); 
+            //text("Missão completa com sucesso!\nPressione SPACE para refazer.",width / 2 , height / 2 );
+            if(millis()-winMessageTime<2000){
+                text("Missão completa com sucesso!",width / 2 , height / 2);
+
+            } 
+            else {
+                text("Missão completa com sucesso!",width / 2 , height / 2 - 40);
+                text("Pressione SPACE para refazer.", width / 2 , height / 2 + 30);
+                justWon = false;
+            }
         }
+        if(keyWentDown(" ") && (gameState == "end" || gameState == "win" &&!justWon)){
+        resetGame();
     }
 
     if(gameState === "end"){
@@ -216,13 +232,13 @@ function draw() {
         fill("red");
         text("Você falhou na missão!\nPressione SPACE para reiniciar.",width / 2 , height / 2 ); 
 
-        laser1.velocity.x = 0;
-        laser2.velocity.x = 0;
+        /*laser1.velocity.x = 0;
+        laser2.velocity.x = 0;*/
     }
 
-    if(keyWentDown(" ") && (gameState == "end" || gameState == "win")){
+    /*if(keyWentDown(" ") && (gameState == "end" || gameState == "win")){
         resetGame();
-    }
+    }*/
 
     player.position.x = constrain(player.position.x,35,765);
     player.position.y = constrain(player.position.y,85,720);  
@@ -248,8 +264,18 @@ function resetGame() {
     diamond.visible = true;
     player.visible = true;
 
+    hasDiamond = false;
+
+    //door.changeAnimation("opening");
+    if(door.animation){
+        //door.animation.stop();
+        door.animation.looping = true;
+    }
     door.changeImage("door");
 
     laser1.x = -50;
     laser2.x = 850;
+
+    winMessageTime = 0;
+    justWon = false;
 }
