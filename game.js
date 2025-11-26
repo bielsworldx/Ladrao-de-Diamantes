@@ -14,6 +14,7 @@ let lasersGroup;
 
 let gameState = "start";
 let direction = "back";
+let hasDiamond = false;
 let moving;
 
 function preload() {
@@ -51,7 +52,8 @@ function setup() {
     bg = createSprite(400, 400, 800, 800);
     bg.addImage("floor", floorImage);
     bg.scale = 12;
-    bg.tint = color(255, 255, 255, 100)
+    //bg.tint = color(255, 255, 255, 100);
+    bg.visible = false;
 
     player = createSprite(400,700,40,80);
     player.scale = 2.5;
@@ -96,8 +98,12 @@ function setup() {
 
 function draw() {
 
-
     background(0);
+    push();
+    tint(255, 100);
+    imageMode(CENTER);
+    image(floorImage, width / 2, height / 2, floorImage.width*12,floorImage.height*12);
+    pop();
     moving = false;
     player.velocity.x = 0;
     player.velocity.y = 0;
@@ -106,32 +112,33 @@ function draw() {
     laser2.velocity.x = 0;
 
     if(gameState === "start") {
+        noTint();
         textSize(20);
-        stroke("red");
+        stroke("#a1151c");
         fill("red");
         text("Pressione a barra de espaço para iniciar!",200, 200 ); 
     }
     if(gameState === "play"){
         if(keyDown('w') || keyDown(UP_ARROW)){
-        player.velocity.y = -4;
+        player.velocity.y = -5;
         player.changeAnimation("walkBack");
         moving = true;
         direction = "back";
         }
         if(keyDown('s') || keyDown(DOWN_ARROW)){
-            player.velocity.y = 4;
+            player.velocity.y = 5;
             player.changeAnimation("walkFront");
             moving = true;
             direction = "front";
         }
         if(keyDown('a') || keyDown(LEFT_ARROW)){
-            player.velocity.x = -4;
+            player.velocity.x = -5;
             player.changeAnimation("walkLeft");
             moving = true;
             direction = "left";
         }
         if(keyDown('d') || keyDown(RIGHT_ARROW)){
-            player.velocity.x = 4;
+            player.velocity.x = 5;
             player.changeAnimation("walkRight");
             moving = true;
             direction = "right";
@@ -167,24 +174,53 @@ function draw() {
         }
 
         if(player.isTouching(diamond)){
-            diamond.destroy();
+            hasDiamond = true;
+            diamond.visible = false;
             door.changeAnimation("opening");
             door.animation.looping = false;
+        }
+        if(player.isTouching(door) && hasDiamond == true){
+
+        }
+        else if(player.isTouching(door) && hasDiamond == false){
+            noTint();
+            textSize(50);
+            textAlign(CENTER);
+            stroke("#a1151c");
+            fill("red");
+            text("Colete o diamante para sair!",width / 2 , height / 2 ); 
+        }
+
+        if(player.isTouching(door) && hasDiamond == true){
+            player.visible = false;
+            laser1.velocity.x = 0;
+            laser2.velocity.x = 0;
+            gameState = "win";
+        }
+
+    if(gameState === "win") {
+            //noTint();
+            textSize(50);
+            textAlign(CENTER);
+            stroke("#aa7a13ff");
+            fill("#e8a921ff");
+            text("Missão completa com sucesso!\nPressione SPACE para refazer.",width / 2 , height / 2 ); 
         }
     }
 
     if(gameState === "end"){
+        //noTint();
         textSize(50);
         textAlign(CENTER);
-        stroke("red");
+        stroke("#a1151c");
         fill("red");
-        text("Você falhou na missão!",width / 2 , height / 2 ); 
+        text("Você falhou na missão!\nPressione SPACE para reiniciar.",width / 2 , height / 2 ); 
 
         laser1.velocity.x = 0;
         laser2.velocity.x = 0;
     }
 
-    if(keyWentDown(" ") && gameState == "end"){
+    if(keyWentDown(" ") && (gameState == "end" || gameState == "win")){
         resetGame();
     }
 
@@ -195,7 +231,7 @@ function draw() {
 }
 
 function keyPressed(){
-    if(key === " "){
+    if(key === " " && gameState === "start"){
      gameState = "play";   
     }
 }
@@ -209,8 +245,8 @@ function resetGame() {
     player.position.x = 400;
     player.position.y = 700;
 
-    diamond.position.x = 400;
-    diamond.position.y = 100;
+    diamond.visible = true;
+    player.visible = true;
 
     door.changeImage("door");
 
